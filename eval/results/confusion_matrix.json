@@ -1,0 +1,17 @@
+{
+  "eligible": {
+    "eligible": 24,
+    "ineligible": 0,
+    "unknown": 0
+  },
+  "ineligible": {
+    "eligible": 0,
+    "ineligible": 16,
+    "unknown": 0
+  },
+  "unknown": {
+    "eligible": 0,
+    "ineligible": 0,
+    "unknown": 2
+  }
+}

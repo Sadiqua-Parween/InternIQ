@@ -55,6 +55,8 @@ def _extract_core_branch_terms(branch_str: str) -> set[str]:
 
 def _check_branch_match(req_branch: str, student_branches: List[str], student_degrees: List[str]) -> bool:
     norm_req = _normalize_string(req_branch)
+    if norm_req in ("any", "all", "open", "any branch", "any discipline", "all branches"):
+        return True
     req_core = _extract_core_branch_terms(req_branch)
 
     for student_text in (student_branches + student_degrees):

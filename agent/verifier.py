@@ -102,6 +102,28 @@ class ClaimVerifier:
             if re.search(rf"\b{re.escape(tech)}\b", clean_sentence, re.IGNORECASE):
                 mentioned_tech.append(tech)
 
+        # Check general conversational, salutation, or connective sentences
+        conversational_phrases = [
+            "excited to apply", "thank you for your time", "look forward to",
+            "sincerely", "dear hiring manager", "dear recruiter", "enthusiastic about",
+            "valuable asset", "contribute to the team", "writing to express",
+            "strong interest in", "interest in the", "dear hiring team", "application for",
+            "consideration for", "discussing my background"
+        ]
+        is_conversational = any(phrase in norm_sentence for phrase in conversational_phrases)
+
+        # If sentence is conversational opening/closing (e.g. "I am writing to apply for the NLP Intern role"),
+        # mentions of job title terms are not candidate skill claims.
+        if is_conversational:
+            return ClaimAudit(
+                claim_id=claim_id,
+                claim_text=clean_sentence,
+                claim_type="intent",
+                supporting_fact_ids=["intent_expression"],
+                status=ClaimStatus.SUPPORTED,
+                audit_note="Standard conversational expression of role intent or professional closing.",
+            )
+
         # 3. Check if any mentioned technology is ungrounded (not in profile)
         ungrounded_tech = [
             t for t in mentioned_tech if _normalize(t) not in self.verified_skills_norm
@@ -119,9 +141,11 @@ class ClaimVerifier:
 
         # 4. Search for supporting atomic facts in confirmed_facts
         supporting_ids: List[str] = []
+        if mentioned_tech and not ungrounded_tech:
+            supporting_ids.extend([f"verified_skill_{t}" for t in mentioned_tech])
+
         for fact_id, fact in self.confirmed_facts_by_id.items():
             norm_fact = _normalize(fact.text)
-            # Check overlap or containment
             fact_tokens = {t for t in norm_fact.split() if len(t) > 3}
             sentence_tokens = {t for t in norm_sentence.split() if len(t) > 3}
             token_overlap = fact_tokens.intersection(sentence_tokens)
@@ -144,14 +168,6 @@ class ClaimVerifier:
                 if term in norm_sentence:
                     supporting_ids.append("fact_edu")
                     break
-
-        # Check general conversational or connective sentences (e.g., "I am excited to apply for this role")
-        conversational_phrases = [
-            "excited to apply", "thank you for your time", "look forward to",
-            "sincerely", "dear hiring manager", "dear recruiter", "enthusiastic about",
-            "valuable asset", "contribute to the team"
-        ]
-        is_conversational = any(phrase in norm_sentence for phrase in conversational_phrases)
 
         if supporting_ids or is_conversational:
             status = ClaimStatus.SUPPORTED
@@ -190,7 +206,7 @@ class ClaimVerifier:
 
         # Audit cover letter paragraphs / sentences
         cl_sentences = [
-            s.strip() for s in re.split(r"(?<=[.!?])\s+", draft.cover_letter) if s.strip()
+            s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", draft.cover_letter) if s.strip()
         ]
         for sentence in cl_sentences:
             audit = self.verify_sentence(sentence, claim_id=f"claim_cl_{claim_counter}")

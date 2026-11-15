@@ -1,0 +1,151 @@
+{
+  "timestamp": "2026-11-15T14:21:31.320714",
+  "benchmark_dataset": "eval/labelled_listings.csv",
+  "sample_size": 42,
+  "reference_date": "2026-11-15",
+  "model_version": "sentence-transformers/all-MiniLM-L6-v2",
+  "ranker_version": "ranker_v1",
+  "eligibility_metrics": {
+    "accuracy": 1.0,
+    "total_evaluated": 42,
+    "correct_predictions": 42,
+    "confusion_matrix": {
+      "eligible": {
+        "eligible": 24,
+        "ineligible": 0,
+        "unknown": 0
+      },
+      "ineligible": {
+        "eligible": 0,
+        "ineligible": 16,
+        "unknown": 0
+      },
+      "unknown": {
+        "eligible": 0,
+        "ineligible": 0,
+        "unknown": 2
+      }
+    },
+    "class_metrics": {
+      "eligible": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "tp": 24,
+        "actual_count": 24,
+        "pred_count": 24
+      },
+      "ineligible": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "tp": 16,
+        "actual_count": 16,
+        "pred_count": 16
+      },
+      "unknown": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "tp": 2,
+        "actual_count": 2,
+        "pred_count": 2
+      }
+    },
+    "false_eligible_raw": 0,
+    "false_eligible_share": 0.0,
+    "false_eligible_share_formula": "0 / 24",
+    "actual_ineligible_fpr": 0.0,
+    "actual_ineligible_fpr_formula": "0 / 16"
+  },
+  "ranking_metrics": {
+    "k": 10,
+    "eligible_candidate_pool": 18,
+    "hybrid_ranker_v1": {
+      "precision_at_k": 1.0,
+      "relevant_count": 10,
+      "cutoff": 10,
+      "top_titles": [
+        "AI Engineer Intern",
+        "Machine Learning Intern - Productivity",
+        "Machine Learning Research Intern",
+        "Data Science & AI Intern",
+        "AI & NLP Intern"
+      ]
+    },
+    "keyword_only_baseline": {
+      "precision_at_k": 1.0,
+      "relevant_count": 10,
+      "cutoff": 10
+    },
+    "embedding_only_baseline": {
+      "precision_at_k": 1.0,
+      "relevant_count": 10,
+      "cutoff": 10
+    }
+  },
+  "scam_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tp": 6,
+    "fp": 0,
+    "tn": 36,
+    "fn": 0,
+    "total_scam_postings": 6,
+    "scam_cases": [
+      {
+        "id": "opp_31",
+        "title": "Direct Python Trainee - Fee Required",
+        "result": "TP",
+        "flags": [
+          "FEE_REQUEST"
+        ]
+      },
+      {
+        "id": "opp_32",
+        "title": "Instant Selection ML Intern",
+        "result": "TP",
+        "flags": [
+          "IMPLAUSIBLE_URGENCY"
+        ]
+      },
+      {
+        "id": "opp_33",
+        "title": "Bank Details Upfront Data Intern",
+        "result": "TP",
+        "flags": [
+          "SENSITIVE_INFO_REQUEST"
+        ]
+      },
+      {
+        "id": "opp_34",
+        "title": "ML Intern - Amazon Hiring",
+        "result": "TP",
+        "flags": [
+          "UNVERIFIED_EMAIL_DOMAIN"
+        ]
+      },
+      {
+        "id": "opp_35",
+        "title": "Google AI Intern - Form Application",
+        "result": "TP",
+        "flags": [
+          "DOMAIN_MISMATCH"
+        ]
+      },
+      {
+        "id": "opp_36",
+        "title": "Remote AI Intern - Laptop Security Deposit",
+        "result": "TP",
+        "flags": [
+          "FEE_REQUEST"
+        ]
+      }
+    ]
+  },
+  "truthfulness_metrics": {
+    "drafts_audited": 10,
+    "total_claims_audited": 110,
+    "unsupported_claims_count": 0,
+    "unsupported_claim_rate": 0.0,
+    "target_met": true
+  }
+}
