@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "interniq"
+version = "0.1.0"
+description = "Agentic AI Internship Discovery, Eligibility Verification, Ranking and Application Preparation Assistant"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Mohd Faizan Khan", email = "faizankhan902@users.noreply.github.com" },
+    { name = "Samriddhi Raj" },
+    { name = "Sadiqua Parween" }
+]
+dependencies = [
+    "pydantic>=2.6.0",
+    "python-dotenv>=1.0.0",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.3.0",
+    "httpx>=0.27.0",
+    "tabulate>=0.9.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+ml = [
+    "sentence-transformers>=2.5.0",
+]
+ui = [
+    "streamlit>=1.30.0",
+]
+agent = [
+    "langchain-core>=0.1.30",
+    "langgraph>=0.0.30",
+]
+docs = [
+    "pypdf>=4.0.0",
+    "python-docx>=1.0.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.3.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v"
