@@ -1,18 +1,25 @@
 """
 Data Ingestion and Authorized Source Connectors
 Owner: Sadiqua Parween (Team HumanBot)
-Status: Interface Stubs & Controlled Offline Fixture Fetcher
+Specification: Technical Report Section 2.1, Section 6.1, Table 5, Table 8
 
-Implements tool contract for `fetch_opportunities` and `import_csv_or_url`.
-Strict read-only GET; no scraping unauthorized endpoints, no CAPTCHA bypass.
+Implements tool contract for:
+- `normalize_dedupe`: Deduplicates listings preserving canonical URLs & content hashes.
+- `import_csv`: Parses structured opportunity CSV files.
+- `fetch_opportunities`: High-level dispatcher for Greenhouse, Lever, and CSV sources.
+- `import_url_opportunity`: Safe user-supplied URL fetcher with SSRF defense.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import csv
 import io
 import hashlib
 from datetime import datetime
 from tools.schemas import Listing, WorkMode
+from tools.fetchers.url_safety import validate_safe_url, is_ip_blocked
+from tools.fetchers.greenhouse import GreenhouseConnector, strip_html_tags, detect_work_mode
+from tools.fetchers.lever import LeverConnector
+from tools.fetchers.url_import import import_url_opportunity
 
 
 def normalize_dedupe(raw_listings: List[Listing]) -> List[Listing]:
@@ -127,3 +134,39 @@ def import_csv(file_content: str, source_id: str = "manual_csv") -> List[Listing
         listings.append(listing)
         
     return normalize_dedupe(listings)
+
+
+def fetch_opportunities(
+    source_id: str,
+    target_identifier: Optional[str] = None,
+    csv_content: Optional[str] = None,
+    timeout: float = 10.0,
+) -> List[Listing]:
+    """
+    High-level dispatcher for data ingestion.
+    Supports greenhouse, lever, and manual_csv.
+    """
+    source_lower = source_id.lower().strip()
+    if source_lower == "greenhouse" and target_identifier:
+        connector = GreenhouseConnector(timeout=timeout)
+        return connector.fetch_board_jobs(board_token=target_identifier)
+    elif source_lower == "lever" and target_identifier:
+        connector = LeverConnector(timeout=timeout)
+        return connector.fetch_site_postings(site=target_identifier)
+    elif source_lower in ("csv", "manual_csv") and csv_content:
+        return import_csv(csv_content, source_id=source_id)
+    return []
+
+
+__all__ = [
+    "normalize_dedupe",
+    "import_csv",
+    "fetch_opportunities",
+    "import_url_opportunity",
+    "validate_safe_url",
+    "is_ip_blocked",
+    "GreenhouseConnector",
+    "LeverConnector",
+    "strip_html_tags",
+    "detect_work_mode",
+]
